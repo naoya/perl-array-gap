@@ -11,6 +11,7 @@ sub new {
         bin     => $bin,
         current => 0,
     });
+    bless $self, $class;
 }
 
 sub has_next {
