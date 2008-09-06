@@ -5,7 +5,7 @@ use base qw/Class::Accessor::Lvalue::Fast/;
 
 use Array::Gap::Iterator;
 
-__PACKAGE__->mk_accessors(qw/array previous bin/);
+__PACKAGE__->mk_accessors(qw/previous bin/);
 
 use overload
     '""'     => 'as_string',
