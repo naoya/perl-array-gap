@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use base qw/Class::Accessor::Lvalue::Fast/;
 
+use Array::Gap::Util;
 use Array::Gap::Iterator;
 
 __PACKAGE__->mk_accessors(qw/previous bin/);
@@ -29,7 +30,7 @@ sub new {
 sub push {
     my ($self, $n) = @_;
 
-    $self->bin     .= pack('w', $n - $self->previous);
+    $self->bin     .= encode_vb( $n - $self->previous );
     $self->previous = $n;
 
     return $n;
@@ -49,7 +50,7 @@ sub as_array {
 }
 
 sub as_string {
-    return join ' ', unpack('B*', shift->bin);
+    return unpack('B*', shift->bin);
 }
 
 1;

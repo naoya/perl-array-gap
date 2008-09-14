@@ -2,6 +2,7 @@ package Array::Gap::Iterator;
 use strict;
 use warnings;
 use base qw/Class::Accessor::Lvalue::Fast/;
+use Array::Gap::Util;
 
 __PACKAGE__->mk_accessors(qw/bin current/);
 
@@ -21,8 +22,8 @@ sub has_next {
 sub next {
     my $self = shift;
 
-    if (my $n = unpack('w', $self->bin)) {
-        $self->bin = substr($self->bin, length pack('w', $n));
+    if (my $n = decode_vb $self->bin) {
+        $self->bin = substr($self->bin, length encode_vb $n);
         $self->current += $n;
         return $self->current;
     }
