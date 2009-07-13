@@ -1,33 +1,36 @@
 package Array::Gap::Iterator;
 use strict;
 use warnings;
-use base qw/Class::Accessor::Lvalue::Fast/;
-use Array::Gap::Util;
+# use Array::Gap::Util;
 
-__PACKAGE__->mk_accessors(qw/bin current/);
+use constant BIN     => 0;
+use constant READ    => 1;
+use constant CURRENT => 2;
 
 sub new {
     my ($class, $bin) = @_;
-    my $self = $class->SUPER::new({
-        bin     => $bin,
-        current => 0,
-    });
-    bless $self, $class;
+    my $self = bless [], $class;
+    $self->[BIN]     = $bin;
+    $self->[READ]    = '';
+    $self->[CURRENT] = 0;
+    return $self;
 }
 
 sub has_next {
-    shift->bin ? 1 : 0;
+    $_[0]->[BIN] ? 1 : 0;
 }
 
 sub next {
-    my $self = shift;
-
-    if (my $n = decode_vb $self->bin) {
-        $self->bin = substr($self->bin, length encode_vb $n);
-        $self->current += $n;
-        return $self->current;
+    if (my $n = unpack('w', $_[0]->[BIN])) {
+        my $vb =  pack('w', $n);
+        $_[0]->[READ]    .= $vb;
+        $_[0]->[BIN]     = substr($_[0]->[BIN], length $vb);
+        $_[0]->[CURRENT] += $n;
+        return $_[0]->[CURRENT];
+    } else {
+        warn "Can't decode bin: " . unpack('H*', $_[0]->[BIN] );
+        $_[0]->[BIN] = '';
     }
-
     return;
 }
 
